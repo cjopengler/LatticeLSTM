@@ -28,9 +28,11 @@ np.random.seed(seed_num)
 
 
 def data_initialization(data, gaz_file, train_file, dev_file, test_file):
+    # 将测试集，训练集放在一起构建词汇表
     data.build_alphabet(train_file)
     data.build_alphabet(dev_file)
     data.build_alphabet(test_file)
+
     data.build_gaz_file(gaz_file)
     data.build_gaz_alphabet(train_file)
     data.build_gaz_alphabet(dev_file)
@@ -394,8 +396,12 @@ if __name__ == '__main__':
     save_model_dir = args.savemodel
     gpu = torch.cuda.is_available()
 
+    # 基于字的 embedding
     char_emb = "data/gigaword_chn.all.a2b.uni.ite50.vec"
+
     bichar_emb = None
+
+    # 词向量 - 词向量如何得到的？
     gaz_file = "data/ctb.50d.vec"
     # gaz_file = None
     # char_emb = None
@@ -419,14 +425,24 @@ if __name__ == '__main__':
     
     if status == 'train':
         data = Data()
+
+        # gpu
         data.HP_gpu = gpu
+        # 是否使用 char
         data.HP_use_char = False
+        # batch size
         data.HP_batch_size = 1
+        # 是否使用 bigram
         data.use_bigram = False
+        # dropout
         data.gaz_dropout = 0.5
+
         data.norm_gaz_emb = False
         data.HP_fix_gaz_emb = False
+
+        # 初始化数据
         data_initialization(data, gaz_file, train_file, dev_file, test_file)
+
         data.generate_instance_with_gaz(train_file,'train')
         data.generate_instance_with_gaz(dev_file,'dev')
         data.generate_instance_with_gaz(test_file,'test')

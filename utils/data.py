@@ -17,21 +17,27 @@ PADDING = "</pad>"
 NULLKEY = "-null-"
 
 class Data:
-    def __init__(self): 
+    def __init__(self):
+        # 句子的最大长度
         self.MAX_SENTENCE_LENGTH = 250
         self.MAX_WORD_LENGTH = -1
+        # 数字是否全部归一化成 000
         self.number_normalized = True
         self.norm_word_emb = True
         self.norm_biword_emb = True
         self.norm_gaz_emb = False
+        # 词汇表，是在训练集中 已经分好词的形式的词汇表，如果是字的，那么单个字就是word
         self.word_alphabet = Alphabet('word')
+        # bigram 的词汇表，每两个字的词汇表
         self.biword_alphabet = Alphabet('biword')
+        # 基于字的词汇表, 如果是 word，那么就会遍历word 的到 char的词汇表
         self.char_alphabet = Alphabet('character')
         # self.word_alphabet.add(START)
         # self.word_alphabet.add(UNKNOWN)
         # self.char_alphabet.add(START)
         # self.char_alphabet.add(UNKNOWN)
         # self.char_alphabet.add(PADDING)
+        # label 词汇表
         self.label_alphabet = Alphabet('label', True)
         self.gaz_lower = False
         self.gaz = Gazetteer(self.gaz_lower)
@@ -152,6 +158,11 @@ class Data:
 
 
     def build_alphabet(self, input_file):
+        """
+        该函数即可处理词的也可以处理基于字的，默认是当成词来处理。
+        :param input_file:
+        :return:
+        """
         in_lines = open(input_file,'r').readlines()
         for idx in xrange(len(in_lines)):
             line = in_lines[idx]
@@ -161,19 +172,27 @@ class Data:
                 if self.number_normalized:
                     word = normalize_word(word)
                 label = pairs[-1]
+
+                # label
                 self.label_alphabet.add(label)
+                # word 字母表
                 self.word_alphabet.add(word)
+
+                # biword 是指 bigram, 两个字两个字组成的词， 最后一个用 NULLKEY 补齐
                 if idx < len(in_lines) - 1 and len(in_lines[idx+1]) > 2:
                     biword = word + in_lines[idx+1].strip().split()[0].decode('utf-8')
                 else:
                     biword = word + NULLKEY
                 self.biword_alphabet.add(biword)
+
                 for char in word:
                     self.char_alphabet.add(char)
+
         self.word_alphabet_size = self.word_alphabet.size()
         self.biword_alphabet_size = self.biword_alphabet.size()
         self.char_alphabet_size = self.char_alphabet.size()
         self.label_alphabet_size = self.label_alphabet.size()
+
         startS = False
         startB = False
         for label,_ in self.label_alphabet.iteritems():
@@ -181,6 +200,7 @@ class Data:
                 startS = True
             elif "B-" in label.upper():
                 startB = True
+        # 判断 schema, BMES, 还是 BIO
         if startB:
             if startS:
                 self.tagScheme = "BMES"
@@ -189,6 +209,11 @@ class Data:
 
 
     def build_gaz_file(self, gaz_file):
+        """
+        构建gaz
+        :param gaz_file:
+        :return:
+        """
         ## build gaz file,initial read gaz embedding file
         if gaz_file:
             fins = open(gaz_file, 'r').readlines()

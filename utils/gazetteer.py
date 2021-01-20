@@ -1,10 +1,26 @@
-from trie import Trie 
+#!/usr/bin/env python 2.7
+# -*- coding: utf-8 -*-
+
+#
+# Copyright (c) 2021 PanXu, Inc. All Rights Reserved
+#
+
+from trie import Trie
 
 class Gazetteer:
+    """
+    Gazetteer
+    """
     def __init__(self, lower):
+
+        # 树状存储
         self.trie = Trie()
-        self.ent2type = {} ## word list to type
-        self.ent2id = {"<UNK>":0}   ## word list to id
+
+        # 存储当前 word 的类型
+        self.ent2type = {}  ## word list to type
+
+        # 存储当前 word 的 长度，
+        self.ent2id = {"<UNK>": 0}   ## word list to id
         self.lower = lower
         self.space = ""
 

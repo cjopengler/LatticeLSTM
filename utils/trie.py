@@ -1,4 +1,12 @@
+#!/usr/bin/env python 2.7
+# -*- coding: utf-8 -*-
+
+#
+# Copyright (c) 2021 PanXu, Inc. All Rights Reserved
+#
+
 import collections
+
 class TrieNode:
     # Initialize your data structure here.
     def __init__(self):
@@ -6,6 +14,10 @@ class TrieNode:
         self.is_word = False
 
 class Trie:
+    """
+    构建一个 Trie 用来进行查找，判断一个词是否在 Trie 里面
+    """
+
     def __init__(self):
         self.root = TrieNode()
 
@@ -32,7 +44,6 @@ class Trie:
             if current is None:
                 return False
         return True
-
 
     def enumerateMatch(self, word, space="_", backward=False):
         matched = []

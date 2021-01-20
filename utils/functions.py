@@ -8,6 +8,11 @@ import numpy as np
 from alphabet import Alphabet
 NULLKEY = "-null-"
 def normalize_word(word):
+    """
+    将数字的部分全部归一化成 0
+    :param word:
+    :return:
+    """
     new_word = ""
     for char in word:
         if char.isdigit():
